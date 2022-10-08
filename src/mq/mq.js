@@ -263,20 +263,9 @@ class QueueManager {
             if (error && error !== null) {
               reject(error);
             } else {
-              if (this.bigPayloadService) {
-                this.bigPayloadService
-                  .handleResponse(response)
-                  .then((responseWithData) => {
-                    resolve(responseWithData);
-                  })
-                  .catch((error) => {
-                    console.log('Error when getting payload from redis');
-                    console.log(error);
-                    reject(error);
-                  });
-              } else {
+
                 resolve(response);
-              }
+
             }
           },
         })
@@ -402,12 +391,7 @@ class QueueManager {
       };
 
       const ackWrapper = (reply) => {
-        if (this.bigPayloadService) {
-          this.bigPayloadService
-            .handleQueryHandlerReply(reply)
-            .then(ack)
-            .catch((e) => nackWrapper());
-        } else {
+
           try{
             const dataSize = sizeOf(reply.data || '');
             if( dataSize > MAX_MESSAGE_SIZE_BYTES ){
@@ -417,7 +401,7 @@ class QueueManager {
             }
           }catch (e){}
           ack(reply);
-        }
+
       };
 
       try {
@@ -456,15 +440,6 @@ class QueueManager {
   // (although no guarantees will be made)
   handleMulticast() {}
 
-  enableBigPayloadService(redisController) {
-    const bigPayloadEnv = process.env.ENABLE_BIG_PAYLOAD_HANDLING;
-    const bigPayloadHandlingNotEnabled = !bigPayloadEnv || bigPayloadEnv !== 'true';
-    if (bigPayloadHandlingNotEnabled) {
-      console.log('[mq][enableBigPayloadService] Unable to launch service. Env: ENABLE_BIG_PAYLOAD_HANDLING not set or not set to true');
-      return;
-    }
-    this.bigPayloadService = new BigPayloadService(redisController);
-  }
 }
 
 module.exports = QueueManager;
