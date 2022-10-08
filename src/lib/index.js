@@ -229,9 +229,7 @@ class Router {
 }
 
 const jackrabbit = require('jackrabbit');
-const logger = require('../logger/logger.js');
-const uuid = require('uuid/v4');
-const BigPayloadService = require('./BigPayload/BigPayloadService');
+const uuid = require('uuid');
 const sizeOf = require("object-sizeof");
 
 const MAX_RECONNECTION_RETRIES = 2;
@@ -344,7 +342,7 @@ class QueueManager {
   }
 
   _initHealthProbes() {
-    this.uuid = uuid();
+    this.uuid = uuid.v4();
 
     const queueName = `health_${this.uuid}`;
     logger.debug(`registering handler for health checks on queue ${queueName}`);
