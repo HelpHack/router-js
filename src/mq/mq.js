@@ -133,6 +133,7 @@ class QueueManager {
         console.log(`received health probe response "${response}", rabbitmq is healthy`);
       } catch (e) {
         this.isHealthy = false;
+        console.log({e})
         console.log(`rabbitmq is not healthy`);
       }
     };
