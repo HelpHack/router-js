@@ -1,0 +1,15 @@
+image: node:11-alpine
+
+stages:
+  - test
+
+test:
+  stage: test
+  services:
+    - rabbitmq:latest
+  script:
+    - npm ci
+    - npm run test
+  variables:
+    RABBIT_URL: rabbitmq
+    NODE_ENV: CI
