@@ -1,5 +1,5 @@
 const url = require('url');
-const logger = require('../logger/logger.js');
+// const logger = require('../logger/logger.js');
 
 class Router {
   constructor(queueManager) {
@@ -23,12 +23,12 @@ class Router {
   }
 
   start() {
-    logger.info('Router starting for queues: ', this.handeledQueues);
+    // logger.info('Router starting for queues: ', this.handeledQueues);
     this.handeledQueues.forEach((queueName) => {
       this.queueManager.handleQuery(queueName, this._messageHandler.bind(this, queueName));
     });
     const handledBroadcasts = this.broadcastHandlers.map((h) => h.broadcastName);
-    logger.info('Router starting for broadcasts: ', handledBroadcasts);
+    // logger.info('Router starting for broadcasts: ', handledBroadcasts);
     this.broadcastHandlers.forEach((broadcast) => {
       const { keys, queueName, options } = broadcast;
       this.queueManager.handleBroadcast(keys, this._broadcastHandler.bind(this, broadcast), queueName, options);
@@ -82,13 +82,13 @@ class Router {
 
   async handleBroadcast(request, broadcastHandler) {
     const { broadcastName } = broadcastHandler;
-    logger.debug(`Broadcast for broadcastName: ${broadcastName}`);
+    // logger.debug(`Broadcast for broadcastName: ${broadcastName}`);
     await broadcastHandler.handler(request);
     return true;
   }
 
   async handleRequest(request, queueName) {
-    logger.debug(`Request for queue ${queueName}`, request);
+    // logger.debug(`Request for queue ${queueName}`, request);
 
     const error = await this.applyGlobalMiddleware(request);
 
@@ -106,7 +106,7 @@ class Router {
       for (const handle of handlers) {
         const result = main.match(handle.regexp);
         if (result) {
-          logger.debug(`Request handeled by ${handle.id}`);
+          // logger.debug(`Request handeled by ${handle.id}`);
           const requestObj = {
             ...request,
             path: main,
@@ -124,7 +124,7 @@ class Router {
     }
     const defaultHandler = this.handlers.find((h) => h.method === '*' && h.queueName === queueName);
     if (defaultHandler) {
-      logger.debug(`Request handeled by default handler`);
+      // logger.debug(`Request handeled by default handler`);
       const requestObj = {
         ...request,
         path: main,
@@ -135,7 +135,7 @@ class Router {
       };
       return await defaultHandler.handler(requestObj);
     }
-    logger.debug('No handler matches request');
+    // logger.debug('No handler matches request');
     return {
       statusCode: 404,
       data: { error: 'not found' },
@@ -148,7 +148,7 @@ class Router {
           ack(data);
         })
         .catch((e) => {
-          logger.error('Error handling broadcast:', e);
+          // logger.error('Error handling broadcast:', e);
         });
   }
 
@@ -162,7 +162,7 @@ class Router {
             ack(e.response);
             return;
           }
-          logger.error('Error handling request:', e);
+          // logger.error('Error handling request:', e);
           nack();
         });
   }
