@@ -41,7 +41,21 @@ class QueueManager {
     this.healthProbeExchange = this.rabbit.direct('healthProbeExchange',{});
 
     this.eventExchange = this.rabbit.topic('events');
-
+    this.rabbit
+      .default()
+      .queue({ name: 'core' })
+    this.rabbit
+      .default()
+      .queue({ name: 'directions' })
+    this.rabbit
+      .default()
+      .queue({ name: 'search' })
+    this.rabbit
+      .default()
+      .queue({ name: 'auth' })
+    this.rabbit
+      .default()
+      .queue({ name: 'db-request' })
     // QueryName <string> -> Queue   name: queueName, prefetch: 1, durable: false
     this.queryQueues = {};
 
@@ -281,20 +295,7 @@ class QueueManager {
             if (error && error !== null) {
               reject(error);
             } else {
-              if (this.bigPayloadService) {
-                this.bigPayloadService
-                  .handleResponse(response)
-                  .then((responseWithData) => {
-                    resolve(responseWithData);
-                  })
-                  .catch((error) => {
-                    console.log('Error when getting payload from redis');
-                    console.log(error);
-                    reject(error);
-                  });
-              } else {
-                resolve(response);
-              }
+              resolve(response);
             }
           },
         })
